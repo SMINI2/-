@@ -1,0 +1,32 @@
+library(rpart)
+library(randomForest)
+library(e1071)
+library(class)
+
+ucla = read.csv('https://stats.idre.ucla.edu/stat/data/binary.csv')
+str(ucla)
+ucla$admit = factor(ucla$admit)
+
+training <- ucla[1:240,]
+testing <- ucla[241:400,]
+
+
+r = rpart(admit~., data = training)
+f = randomForest(admit~., data = training, ntree = 50)
+f1 = randomForest(admit~., data = training, ntree = 1000)
+s = svm(admit~., data = training)
+s1 = svm(admit~., data = training, kernel = 'polynomial')
+k = knn(training, testing, training$admit, k = 5)
+
+r_pred = predict(r, newdata = testing, type = 'class')
+f_pred = predict(f, newdata = testing, type = 'class')
+f1_pred = predict(f1, newdata = testing, type = 'class')
+s_pred = predict(s, newdata = testing, type = 'class' )
+s1_pred = predict(s1, newdata = testing, type = 'class' )
+
+table(r_pred, testing$admit)
+table(f_pred, testing$admit)
+table(f1_pred, testing$admit)
+table(s_pred, testing$admit)
+table(s1_pred, testing$admit)
+table(k, testing$admit)
